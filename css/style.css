@@ -366,11 +366,11 @@ button {
 
 /* Hero Slide Transition */
 .hero-content {
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    transition: opacity 0.6s ease-in-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .hero-backdrop {
-    transition: opacity 0.5s ease-out;
+    transition: opacity 1s linear;
 }
 
 /* Buttons - Streamiz Style */
@@ -480,11 +480,15 @@ button {
 .card {
     position: relative;
     display: block;
+    width: 100%;
+    aspect-ratio: 2/3;
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--bg-card);
     transition: transform var(--transition-base), box-shadow var(--transition-base);
     animation: fadeIn 0.5s ease-out backwards;
+    /* Remove text below card */
+    isolation: isolate;
 }
 
 .card:hover {
@@ -493,47 +497,52 @@ button {
 }
 
 .card-poster {
-    position: relative;
-    aspect-ratio: 2/3;
-    overflow: hidden;
-    background: var(--bg-secondary);
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
 }
 
 .card-poster img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--transition-slow);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .card:hover .card-poster img {
     transform: scale(1.05);
 }
 
+/* Gradient Overlay - Always visible for readability or fade in? 
+   Reference photo implies clean look. We'll add a bottom gradient for the title overlay */
 .card-poster::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.9) 100%);
     pointer-events: none;
+    z-index: 2;
 }
 
+/* Yellow Rating Badge - Top Right */
 .card-rating {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0.75rem;
+    right: 0.75rem;
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.6rem;
+    background: var(--accent-primary);
+    color: #000000;
+    border-radius: 9999px;
+    /* Pill shape */
     font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    z-index: 2;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .card-rating svg {
@@ -542,6 +551,7 @@ button {
     fill: currentColor;
 }
 
+/* Play Button - Optional, minimal */
 .card-play {
     position: absolute;
     top: 50%;
@@ -549,40 +559,70 @@ button {
     transform: translate(-50%, -50%) scale(0.8);
     width: 48px;
     height: 48px;
-    background: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: all var(--transition-base);
-    z-index: 3;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .card-play svg {
     width: 20px;
     height: 20px;
-    color: var(--bg-primary);
+    color: #fff;
     margin-left: 2px;
 }
 
 .card:hover .card-play {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
 }
 
+.card:hover .card-play svg {
+    color: #000;
+}
+
+/* Info Overlay - Positioned absolutely at bottom */
 .card-info {
-    padding: 0.75rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 5;
+    transform: translateY(10px);
+    opacity: 0;
+    /* Hidden by default per cleaner look request, or change to 1 if titles needed */
+    transition: all var(--transition-base);
+}
+
+/* Show info on hover for usability */
+.card:hover .card-info {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .card-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #fff;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.125rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.card-meta {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .card-meta {

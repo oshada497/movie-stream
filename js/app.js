@@ -63,12 +63,12 @@ function slideToHero(movie) {
         updateHero(movie);
 
         // Slide in animation
-        heroContent.style.transition = 'all 0.5s ease-out';
+        heroContent.style.transition = 'all 0.6s ease-out';
         heroContent.style.opacity = '1';
         heroContent.style.transform = 'translateX(0)';
-        heroBackdrop.style.transition = 'opacity 0.5s ease-out';
+        heroBackdrop.style.transition = 'opacity 1s ease-out';
         heroBackdrop.style.opacity = '1';
-    }, 300);
+    }, 600);
 }
 
 // Update hero section
