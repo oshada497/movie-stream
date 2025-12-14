@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Stream movies and TV shows for free in HD quality">
-    <title>MovieStream - Watch Movies & TV Shows Online</title>
+    <meta name="description"
+        content="Watch movies and TV shows online for free in HD quality. Stream the latest releases and classics.">
+    <title>Streamiz | Watch Movies & TV Shows Ad-Free</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
@@ -16,32 +17,18 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="5 3 19 12 5 21 5 3" fill="url(#grad)" />
-                    <defs>
-                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#667eea" />
-                            <stop offset="100%" style="stop-color:#764ba2" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                MovieStream
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                </div>
+                Streamiz
             </a>
 
             <div class="nav-links">
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="movies.html" class="nav-link">Movies</a>
                 <a href="tvshows.html" class="nav-link">TV Shows</a>
-                <div class="dropdown">
-                    <button class="nav-link dropdown-toggle">
-                        Genres
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </button>
-                    <div class="dropdown-menu" id="genreDropdown"></div>
-                </div>
             </div>
 
             <div class="search-container">
@@ -49,7 +36,7 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search movies, TV shows...">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search movies & TV shows...">
             </div>
         </div>
     </nav>
@@ -60,20 +47,27 @@
             <img src="" alt="" id="heroImage">
         </div>
         <div class="hero-overlay"></div>
-        <div class="hero-content slide-up">
+        <div class="hero-content">
+            <div class="hero-badge" id="heroType">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                Featured
+            </div>
             <div class="hero-meta">
-                <span class="hero-badge" id="heroType">Movie</span>
                 <span class="hero-rating" id="heroRating">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <svg viewBox="0 0 24 24">
                         <polygon
                             points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                     <span>0.0</span>
                 </span>
+                <span class="hero-dot"></span>
                 <span class="hero-year" id="heroYear">2024</span>
             </div>
             <h1 class="hero-title" id="heroTitle">Loading...</h1>
-            <p class="hero-description" id="heroDescription">Loading movie information...</p>
+            <p class="hero-description" id="heroDescription">Discover and stream the best movies and TV shows online.
+            </p>
             <div class="hero-genres" id="heroGenres"></div>
             <div class="hero-buttons">
                 <button class="btn btn-primary" id="heroWatchBtn">
@@ -94,13 +88,13 @@
         </div>
     </section>
 
-    <!-- Trending Movies Section -->
+    <!-- Trending Movies -->
     <section class="section" id="trending">
         <div class="section-header">
-            <h2 class="section-title">Trending Now</h2>
-            <a href="#" class="view-all">
+            <h2 class="section-title">Trending Movies</h2>
+            <a href="movies.html" class="view-all">
                 View All
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </a>
@@ -112,13 +106,13 @@
         </div>
     </section>
 
-    <!-- Popular Movies Section -->
+    <!-- Popular Movies -->
     <section class="section" id="movies">
         <div class="section-header">
             <h2 class="section-title">Popular Movies</h2>
-            <a href="#" class="view-all">
+            <a href="movies.html" class="view-all">
                 View All
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </a>
@@ -130,13 +124,13 @@
         </div>
     </section>
 
-    <!-- TV Shows Section -->
+    <!-- Popular TV Shows -->
     <section class="section" id="tvshows">
         <div class="section-header">
             <h2 class="section-title">Popular TV Shows</h2>
-            <a href="#" class="view-all">
+            <a href="tvshows.html" class="view-all">
                 View All
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </a>
@@ -148,13 +142,13 @@
         </div>
     </section>
 
-    <!-- Top Rated Section -->
+    <!-- Top Rated Movies -->
     <section class="section" id="toprated">
         <div class="section-header">
-            <h2 class="section-title">Top Rated</h2>
-            <a href="#" class="view-all">
+            <h2 class="section-title">Top Rated Movies</h2>
+            <a href="movies.html" class="view-all">
                 View All
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </a>
@@ -166,14 +160,32 @@
         </div>
     </section>
 
+    <!-- Top Rated TV Shows -->
+    <section class="section" id="topratedtv">
+        <div class="section-header">
+            <h2 class="section-title">Top Rated TV Shows</h2>
+            <a href="tvshows.html" class="view-all">
+                View All
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </a>
+        </div>
+        <div class="cards-grid" id="topRatedTVGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-logo">MovieStream</div>
-            <p class="footer-text">Stream your favorite movies and TV shows in HD quality.</p>
+            <div class="footer-logo">Streamiz</div>
+            <p class="footer-text">Watch your favorite movies and TV shows in HD quality for free.</p>
             <div class="footer-disclaimer">
                 <strong>Disclaimer:</strong> This site does not store any files on its server. All contents are provided
-                by non-affiliated third parties.
+                by non-affiliated third parties. This is a demo project for educational purposes only.
             </div>
         </div>
     </footer>
