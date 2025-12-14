@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Watch movies online for free in HD">
+    <title>Watch Movie - MovieStream</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3" fill="url(#grad)" />
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea" />
+                            <stop offset="100%" style="stop-color:#764ba2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                MovieStream
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#movies" class="nav-link">Movies</a>
+                <a href="index.html#tvshows" class="nav-link">TV Shows</a>
+            </div>
+
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search movies, TV shows...">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Movie Detail Hero -->
+    <section class="detail-hero" id="detailHero">
+        <div class="detail-backdrop" id="detailBackdrop">
+            <img src="" alt="" id="backdropImage">
+        </div>
+        <div class="detail-overlay"></div>
+        <div class="detail-container">
+            <div class="detail-poster" id="detailPoster">
+                <img src="" alt="" id="posterImage">
+            </div>
+            <div class="detail-info">
+                <div class="detail-meta">
+                    <span class="hero-badge">Movie</span>
+                    <span class="hero-rating" id="movieRating">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                        <span id="ratingValue">0.0</span>
+                    </span>
+                    <span class="hero-year" id="movieYear">2024</span>
+                    <span class="hero-duration" id="movieRuntime">0 min</span>
+                </div>
+                <h1 class="detail-title" id="movieTitle">Loading...</h1>
+                <p class="detail-tagline" id="movieTagline"></p>
+                <div class="hero-genres" id="movieGenres"></div>
+                <p class="detail-description" id="movieOverview">Loading movie information...</p>
+                <div class="detail-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="movieVotes">0</div>
+                        <div class="stat-label">Votes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="moviePopularity">0</div>
+                        <div class="stat-label">Popularity</div>
+                    </div>
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToPlayer()">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        Watch Now
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.history.back()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Player Section -->
+    <section class="player-section" id="playerSection">
+        <div class="player-header">
+            <h2 class="player-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-right: 8px;">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
+                    <line x1="7" y1="2" x2="7" y2="22" />
+                    <line x1="17" y1="2" x2="17" y2="22" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <line x1="2" y1="7" x2="7" y2="7" />
+                    <line x1="2" y1="17" x2="7" y2="17" />
+                    <line x1="17" y1="17" x2="22" y2="17" />
+                    <line x1="17" y1="7" x2="22" y2="7" />
+                </svg>
+                Watch Movie
+            </h2>
+        </div>
+        <div class="player-container" id="playerContainer">
+            <div class="player-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <p>Loading player...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Movies Section -->
+    <section class="section" id="similar">
+        <div class="section-header">
+            <h2 class="section-title">Similar Movies</h2>
+        </div>
+        <div class="cards-grid" id="similarGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">MovieStream</div>
+            <p class="footer-text">Stream your favorite movies and TV shows in HD quality.</p>
+            <div class="footer-disclaimer">
+                <strong>Disclaimer:</strong> This site does not store any files on its server. All contents are provided
+                by non-affiliated third parties.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Get movie ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        if (!movieId) {
+            window.location.href = 'index.html';
+        }
+
+        // Scroll to player
+        function scrollToPlayer() {
+            document.getElementById('playerSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Load movie details
+        async function loadMovieDetails() {
+            try {
+                const movie = await API.getDetails(movieId, 'movie');
+
+                // Update page title
+                document.title = `${movie.title} - MovieStream`;
+
+                // Update backdrop
+                document.getElementById('backdropImage').src = API.getBackdropUrl(movie.backdrop_path);
+
+                // Update poster
+                document.getElementById('posterImage').src = API.getImageUrl(movie.poster_path);
+
+                // Update info
+                document.getElementById('movieTitle').textContent = movie.title;
+                document.getElementById('movieTagline').textContent = movie.tagline || '';
+                document.getElementById('ratingValue').textContent = movie.vote_average.toFixed(1);
+                document.getElementById('movieYear').textContent = movie.release_date?.split('-')[0] || 'N/A';
+                document.getElementById('movieRuntime').textContent = movie.runtime ? `${movie.runtime} min` : '';
+                document.getElementById('movieOverview').textContent = movie.overview || 'No description available.';
+                document.getElementById('movieVotes').textContent = movie.vote_count.toLocaleString();
+                document.getElementById('moviePopularity').textContent = Math.round(movie.popularity);
+
+                // Update genres
+                const genresContainer = document.getElementById('movieGenres');
+                genresContainer.innerHTML = movie.genres.map(g =>
+                    `<span class="genre-tag">${g.name}</span>`
+                ).join('');
+
+                // Load player
+                loadPlayer(movieId);
+
+                // Load similar movies
+                if (movie.similar && movie.similar.results) {
+                    displayCards('similarGrid', movie.similar.results.slice(0, 8), 'movie');
+                }
+
+            } catch (error) {
+                console.error('Error loading movie:', error);
+            }
+        }
+
+        // Load video player
+        function loadPlayer(id) {
+            const container = document.getElementById('playerContainer');
+            const embedUrl = API.getMovieEmbedUrl(id);
+            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+        }
+
+        // Display cards
+        function displayCards(containerId, items, mediaType) {
+            const container = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">No similar movies found.</p>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <a href="movie.html?id=${item.id}" class="card">
+                    <div class="card-poster">
+                        <img src="${API.getImageUrl(item.poster_path)}" alt="${item.title || item.name}" loading="lazy">
+                        <div class="card-overlay">
+                            <div class="play-button">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-rating">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            ${item.vote_average.toFixed(1)}
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-title">${item.title || item.name}</h3>
+                        <p class="card-meta">${(item.release_date || item.first_air_date)?.split('-')[0] || 'N/A'}</p>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Initialize
+        loadMovieDetails();
+    </script>
+</body>
+
+</html>
