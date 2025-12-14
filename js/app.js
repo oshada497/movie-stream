@@ -1,7 +1,9 @@
 // Streamiz Clone - Main Application Logic
 
 // Global state
-let heroMovie = null;
+let heroMovies = [];
+let currentHeroIndex = 0;
+let heroInterval = null;
 let genres = [];
 
 // Initialize application
@@ -22,19 +24,51 @@ async function loadGenres() {
     }
 }
 
-// Load hero section
+// Load hero section with multiple movies for rotation
 async function loadHero() {
     try {
         const data = await API.getTrending('movie', 'week');
-        const movies = data.results.filter(m => m.backdrop_path && m.overview);
+        heroMovies = data.results.filter(m => m.backdrop_path && m.overview).slice(0, 5);
 
-        if (movies.length > 0) {
-            heroMovie = movies[Math.floor(Math.random() * Math.min(5, movies.length))];
-            updateHero(heroMovie);
+        if (heroMovies.length > 0) {
+            updateHero(heroMovies[0]);
+            startHeroSlider();
         }
     } catch (error) {
         console.error('Error loading hero:', error);
     }
+}
+
+// Start hero slider - rotates every 5 seconds
+function startHeroSlider() {
+    if (heroMovies.length <= 1) return;
+
+    heroInterval = setInterval(() => {
+        currentHeroIndex = (currentHeroIndex + 1) % heroMovies.length;
+        slideToHero(heroMovies[currentHeroIndex]);
+    }, 5000);
+}
+
+// Slide animation to new hero
+function slideToHero(movie) {
+    const heroContent = document.querySelector('.hero-content');
+    const heroBackdrop = document.getElementById('heroBackdrop');
+
+    // Slide out animation
+    heroContent.style.opacity = '0';
+    heroContent.style.transform = 'translateX(-30px)';
+    heroBackdrop.style.opacity = '0';
+
+    setTimeout(() => {
+        updateHero(movie);
+
+        // Slide in animation
+        heroContent.style.transition = 'all 0.5s ease-out';
+        heroContent.style.opacity = '1';
+        heroContent.style.transform = 'translateX(0)';
+        heroBackdrop.style.transition = 'opacity 0.5s ease-out';
+        heroBackdrop.style.opacity = '1';
+    }, 300);
 }
 
 // Update hero section
@@ -63,6 +97,34 @@ function updateHero(movie) {
     document.getElementById('heroInfoBtn').onclick = () => {
         window.location.href = `${mediaType}.html?id=${movie.id}`;
     };
+
+    // Update indicators
+    updateHeroIndicators();
+}
+
+// Update hero slide indicators
+function updateHeroIndicators() {
+    const indicatorsContainer = document.getElementById('heroIndicators');
+    if (!indicatorsContainer) return;
+
+    indicatorsContainer.innerHTML = heroMovies.map((_, index) => `
+        <button class="hero-indicator ${index === currentHeroIndex ? 'active' : ''}" 
+                onclick="goToHero(${index})"></button>
+    `).join('');
+}
+
+// Go to specific hero slide
+function goToHero(index) {
+    if (index === currentHeroIndex) return;
+
+    // Reset interval
+    if (heroInterval) {
+        clearInterval(heroInterval);
+    }
+
+    currentHeroIndex = index;
+    slideToHero(heroMovies[index]);
+    startHeroSlider();
 }
 
 // Load all content sections
@@ -150,7 +212,6 @@ function setupEventListeners() {
     }
 
     // Navbar scroll effect
-    let lastScroll = 0;
     window.addEventListener('scroll', () => {
         const navbar = document.getElementById('navbar');
         if (navbar) {
@@ -160,6 +221,16 @@ function setupEventListeners() {
                 navbar.classList.remove('scrolled');
             }
         }
-        lastScroll = window.scrollY;
     });
+
+    // Pause slider on hover
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        hero.addEventListener('mouseenter', () => {
+            if (heroInterval) clearInterval(heroInterval);
+        });
+        hero.addEventListener('mouseleave', () => {
+            startHeroSlider();
+        });
+    }
 }
