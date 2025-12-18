@@ -26,12 +26,17 @@ const DB = {
     // Add a movie
     addMovie(movie) {
         const data = this.getData();
-        // Check if exists
         const index = data.movies.findIndex(m => m.tmdbId === movie.tmdbId);
+
+        // Ensure structure
+        if (!movie.sources && movie.url) {
+            movie.sources = [{ quality: 'Default', url: movie.url }];
+        }
+
         if (index >= 0) {
-            data.movies[index] = movie; // Update
+            data.movies[index] = { ...data.movies[index], ...movie };
         } else {
-            data.movies.push(movie); // Add
+            data.movies.push(movie);
         }
         this.saveData(data);
     },
@@ -42,25 +47,41 @@ const DB = {
         const index = data.tv.findIndex(t => t.tmdbId === show.tmdbId);
 
         if (index >= 0) {
-            // Merge seasons/episodes
             const existing = data.tv[index];
             show.seasons.forEach(season => {
-                const existingSeason = existing.seasons.find(s => s.season_number === season.season_number);
+                let existingSeason = existing.seasons.find(s => s.season_number === season.season_number);
                 if (existingSeason) {
                     season.episodes.forEach(episode => {
+                        // Ensure sources structure
+                        if (!episode.sources && episode.url) {
+                            episode.sources = [{ quality: 'Default', url: episode.url }];
+                        }
+
                         const existingEpIndex = existingSeason.episodes.findIndex(e => e.episode_number === episode.episode_number);
                         if (existingEpIndex >= 0) {
-                            existingSeason.episodes[existingEpIndex] = episode;
+                            existingSeason.episodes[existingEpIndex] = { ...existingSeason.episodes[existingEpIndex], ...episode };
                         } else {
                             existingSeason.episodes.push(episode);
                         }
                     });
                 } else {
+                    // New season, ensure episodes have sources
+                    season.episodes = season.episodes.map(e => {
+                        if (!e.sources && e.url) e.sources = [{ quality: 'Default', url: e.url }];
+                        return e;
+                    });
                     existing.seasons.push(season);
                 }
             });
             data.tv[index] = existing;
         } else {
+            // New Show, ensure sources
+            show.seasons.forEach(s => {
+                s.episodes = s.episodes.map(e => {
+                    if (!e.sources && e.url) e.sources = [{ quality: 'Default', url: e.url }];
+                    return e;
+                });
+            });
             data.tv.push(show);
         }
         this.saveData(data);

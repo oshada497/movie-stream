@@ -114,6 +114,34 @@ async function searchTMDB() {
     }
 }
 
+// Source Input Management
+function addSourceInput(containerId, quality = '', url = '') {
+    const container = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'source-row';
+    div.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 0.5rem;';
+    div.innerHTML = `
+        <input type="text" class="source-quality" placeholder="Quality (e.g. 1080p)" value="${quality}" style="width: 140px;">
+        <input type="text" class="source-url" placeholder="URL" value="${url}" style="flex: 1;">
+        <button onclick="this.parentElement.remove()" class="btn btn-red" style="padding: 0 0.8rem;">x</button>
+    `;
+    container.appendChild(div);
+}
+
+function getSourcesFromInputs(containerId) {
+    const container = document.getElementById(containerId);
+    const rows = container.querySelectorAll('.source-row');
+    const sources = [];
+    rows.forEach(row => {
+        const quality = row.querySelector('.source-quality').value.trim();
+        const url = row.querySelector('.source-url').value.trim();
+        if (quality && url) {
+            sources.push({ quality, url });
+        }
+    });
+    return sources;
+}
+
 // Open Editor
 function openEditor(item, type) {
     currentSelection = item;
@@ -128,10 +156,25 @@ function openEditor(item, type) {
 
         // Load existing
         const existing = DB.getMovie(item.id);
-        document.getElementById('movieUrl').value = existing ? existing.url : '';
+        const container = document.getElementById('movieSourcesList');
+        container.innerHTML = ''; // Clear
+
+        if (existing && existing.sources && existing.sources.length > 0) {
+            existing.sources.forEach(s => addSourceInput('movieSourcesList', s.quality, s.url));
+        } else if (existing && existing.url) {
+            addSourceInput('movieSourcesList', 'Default', existing.url);
+        } else {
+            addSourceInput('movieSourcesList', '1080p');
+        }
     } else {
         document.getElementById('movieEditor').style.display = 'none';
         document.getElementById('tvEditor').style.display = 'block';
+
+        // Reset Episode Inputs
+        document.getElementById('seasonNum').value = '';
+        document.getElementById('episodeNum').value = '';
+        document.getElementById('tvSourcesList').innerHTML = '';
+        addSourceInput('tvSourcesList', '1080p');
 
         // Load existing
         const existing = DB.getTV(item.id);
@@ -142,7 +185,7 @@ function openEditor(item, type) {
                     currentEpisodes.push({
                         season: s.season_number,
                         episode: e.episode_number,
-                        url: e.url
+                        sources: e.sources || [{ quality: 'Default', url: e.url }]
                     });
                 });
             });
@@ -161,15 +204,27 @@ function closeModal() {
 function addEpisodeTolist() {
     const s = document.getElementById('seasonNum').value;
     const e = document.getElementById('episodeNum').value;
-    const u = document.getElementById('episodeUrl').value;
+    const sources = getSourcesFromInputs('tvSourcesList');
 
-    if (s && e && u) {
-        currentEpisodes.push({ season: parseInt(s), episode: parseInt(e), url: u });
+    if (s && e && sources.length > 0) {
+        // Check if episode already exists in list, replace if so
+        const existingIdx = currentEpisodes.findIndex(ep => ep.season == s && ep.episode == e);
+        const newEp = { season: parseInt(s), episode: parseInt(e), sources: sources };
+
+        if (existingIdx >= 0) {
+            currentEpisodes[existingIdx] = newEp;
+        } else {
+            currentEpisodes.push(newEp);
+        }
+
         renderEpisodes();
 
-        // Clear inputs
-        document.getElementById('episodeNum').value = '';
-        document.getElementById('episodeUrl').value = '';
+        // Clear inputs for next episode
+        document.getElementById('episodeNum').value = parseInt(e) + 1; // Auto increment episode
+        document.getElementById('tvSourcesList').innerHTML = '';
+        addSourceInput('tvSourcesList', '1080p');
+    } else {
+        alert('Please fill Season, Episode and at least one Source.');
     }
 }
 
@@ -182,10 +237,14 @@ function renderEpisodes() {
     const container = document.getElementById('addedEpisodes');
     container.innerHTML = currentEpisodes.sort((a, b) => (a.season - b.season) || (a.episode - b.episode))
         .map((ep, idx) => `
-        <div class="episode-item">
-            <span>S${ep.season} E${ep.episode}</span>
-            <input type="text" value="${ep.url}" readonly style="flex:1; background: #222;">
-            <button onclick="removeEpisode(${idx})" class="btn btn-red" style="padding: 0.5rem;">x</button>
+        <div class="episode-item" style="flex-direction: column; background: #222; padding: 0.5rem; border-radius: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; color: #eab308;">S${ep.season} E${ep.episode}</span>
+                <button onclick="removeEpisode(${idx})" class="btn btn-red" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Remove</button>
+            </div>
+            <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #aaa;">
+                ${ep.sources.map(s => `<span style="margin-right: 0.5rem; border: 1px solid #444; padding: 1px 4px; border-radius: 3px;">${s.quality}</span>`).join('')}
+            </div>
         </div>
     `).join('');
 }
@@ -195,15 +254,15 @@ function saveContent() {
     if (!currentSelection) return;
 
     if (currentSelection.media_type === 'movie') {
-        const url = document.getElementById('movieUrl').value;
-        if (!url) {
-            alert('Please enter a URL');
+        const sources = getSourcesFromInputs('movieSourcesList');
+        if (sources.length === 0) {
+            alert('Please add at least one source');
             return;
         }
 
         DB.addMovie({
             tmdbId: currentSelection.id,
-            url: url
+            sources: sources
         });
     } else {
         if (currentEpisodes.length === 0) {
@@ -219,7 +278,10 @@ function saveContent() {
                 season = { season_number: ep.season, episodes: [] };
                 seasons.push(season);
             }
-            season.episodes.push({ episode_number: ep.episode, url: ep.url });
+            season.episodes.push({
+                episode_number: ep.episode,
+                sources: ep.sources
+            });
         });
 
         DB.addTV({
