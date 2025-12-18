@@ -84,6 +84,7 @@
     </footer>
 
     <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
     <script src="js/api.js"></script>
     <script>
         let currentPage = 1;
@@ -140,22 +141,8 @@
                 if (currentGenre) {
                     data = await API.discoverByGenre(currentGenre, 'tv', currentPage);
                 } else {
-                    switch (currentFilter) {
-                        case 'trending':
-                            data = await API.getTrending('tv', 'week');
-                            break;
-                        case 'top_rated':
-                            data = await fetchTMDB(`/tv/top_rated?page=${currentPage}`);
-                            break;
-                        case 'on_the_air':
-                            data = await fetchTMDB(`/tv/on_the_air?page=${currentPage}`);
-                            break;
-                        case 'airing_today':
-                            data = await fetchTMDB(`/tv/airing_today?page=${currentPage}`);
-                            break;
-                        default:
-                            data = await API.getPopular('tv', currentPage);
-                    }
+                    // For manual content, map all filters to the main list
+                    data = await API.getPopular('tv', currentPage);
                 }
 
                 totalPages = data.total_pages || 1;
@@ -169,18 +156,13 @@
 
                 renderShows(shows);
 
-                loadBtn.disabled = currentPage >= totalPages;
-                loadBtn.textContent = currentPage >= totalPages ? 'No More' : 'Load More';
+                loadBtn.disabled = true;
+                loadBtn.textContent = 'No More';
 
             } catch (error) {
                 console.error('Error loading shows:', error);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error loading content.</p>';
             }
-        }
-
-        async function fetchTMDB(endpoint) {
-            const url = `${CONFIG.TMDB_BASE_URL}${endpoint}&api_key=${CONFIG.TMDB_API_KEY}`;
-            const response = await fetch(url);
-            return response.json();
         }
 
         function renderShows(shows) {

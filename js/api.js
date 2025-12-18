@@ -60,6 +60,21 @@ const API = {
         return response.json();
     },
 
+    // Discover by genre (Manual Filter)
+    async discoverByGenre(genreId, mediaType = 'movie', page = 1) {
+        const fullList = await this.getManualContent(mediaType);
+        const filtered = fullList.results.filter(item =>
+            item.genres && item.genres.some(g => g.id.toString() === genreId.toString())
+        );
+
+        return {
+            page: 1,
+            results: filtered,
+            total_pages: 1,
+            total_results: filtered.length
+        };
+    },
+
     // Get image URL
     getImageUrl(path, size = 'w500') {
         if (!path) return 'https://via.placeholder.com/500x750?text=No+Image';
