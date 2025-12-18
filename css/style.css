@@ -1267,3 +1267,28 @@ button {
     cursor: not-allowed;
     transform: none;
 }
+
+/* Plyr Customization */
+:root {
+    --plyr-color-main: #eab308;
+    --plyr-video-control-color: #fff;
+    --plyr-video-control-background-hover: rgba(234, 179, 8, 0.8);
+}
+
+.plyr--video {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.plyr--full-ui input[type=range] {
+    color: var(--plyr-color-main);
+}
+
+.plyr__control--overlaid {
+    background: var(--plyr-color-main);
+}
+
+.plyr__control--overlaid:hover {
+    background: var(--plyr-video-control-background-hover);
+}
