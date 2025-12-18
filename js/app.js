@@ -83,11 +83,19 @@ function updateHero(movie) {
     document.getElementById('heroYear').textContent = (movie.release_date || movie.first_air_date)?.split('-')[0] || '';
 
     // Genres
-    const genreNames = movie.genre_ids.map(id => {
-        const genre = genres.find(g => g.id === id);
-        return genre ? `<span class="genre-tag">${genre.name}</span>` : '';
-    }).join('');
-    document.getElementById('heroGenres').innerHTML = genreNames;
+    // Genres
+    let genreHtml = '';
+    if (movie.genres && Array.isArray(movie.genres)) {
+        // Detail object format (from manual DB -> getDetails)
+        genreHtml = movie.genres.map(g => `<span class="genre-tag">${g.name}</span>`).join('');
+    } else if (movie.genre_ids && Array.isArray(movie.genre_ids)) {
+        // List object format (fallback)
+        genreHtml = movie.genre_ids.map(id => {
+            const genre = genres.find(g => g.id === id);
+            return genre ? `<span class="genre-tag">${genre.name}</span>` : '';
+        }).join('');
+    }
+    document.getElementById('heroGenres').innerHTML = genreHtml;
 
     // Buttons
     const mediaType = movie.title ? 'movie' : 'tv';
