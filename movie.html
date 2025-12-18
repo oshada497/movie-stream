@@ -201,7 +201,7 @@
             }
 
             // Check if it's a direct file or HLS
-            const isDirectFile = url.match(/\.(mp4|webm|ogg|mkv|mov|avi)$/i);
+            const isDirectFile = url.match(/\.(mp4|webm|ogg|mkv|mov|avi)($|\?)/i);
             const isHLS = url.includes('.m3u8');
 
             if (isDirectFile || isHLS) {
