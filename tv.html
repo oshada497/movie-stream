@@ -264,9 +264,11 @@
                 return;
             }
 
-            const sources = data.map(s => {
+            let sourcesRaw = Array.isArray(data) ? data : [{ quality: 'Default', url: data }];
+
+            const sources = sourcesRaw.map(s => {
                 let size = parseInt(s.quality) || 0;
-                if (s.quality.toLowerCase().includes('default')) size = 576;
+                if (s.quality && s.quality.toLowerCase().includes('default')) size = 576;
 
                 return {
                     src: s.url,

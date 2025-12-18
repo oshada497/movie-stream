@@ -200,10 +200,13 @@
                 return;
             }
 
+            // Handle legacy/fallback URL (string) vs New Sources Array
+            let sourcesRaw = Array.isArray(data) ? data : [{ quality: 'Default', url: data }];
+
             // data is Array of { quality, url }
-            const sources = data.map(s => {
+            const sources = sourcesRaw.map(s => {
                 let size = parseInt(s.quality) || 0; // "1080p" -> 1080
-                if (s.quality.toLowerCase().includes('default')) size = 576; // Arbitrary 
+                if (s.quality && s.quality.toLowerCase().includes('default')) size = 576; // Arbitrary 
 
                 return {
                     src: s.url,
