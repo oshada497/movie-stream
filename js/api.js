@@ -1,27 +1,38 @@
-// TMDB API Functions
+// TMDB API & Manual Content Logic
 const API = {
-    // Get trending movies
+    // Get trending (Now returns Manual Movies)
     async getTrending(mediaType = 'movie', timeWindow = 'week') {
-        const url = `${CONFIG.TMDB_BASE_URL}/trending/${mediaType}/${timeWindow}?api_key=${CONFIG.TMDB_API_KEY}`;
-        const response = await fetch(url);
-        return response.json();
+        return this.getManualContent(mediaType);
     },
 
-    // Get popular movies
+    // Get popular (Now returns Manual Movies)
     async getPopular(mediaType = 'movie', page = 1) {
-        const url = `${CONFIG.TMDB_BASE_URL}/${mediaType}/popular?api_key=${CONFIG.TMDB_API_KEY}&page=${page}`;
-        const response = await fetch(url);
-        return response.json();
+        return this.getManualContent(mediaType);
     },
 
-    // Get top rated
+    // Get top rated (Now returns Manual Movies)
     async getTopRated(mediaType = 'movie', page = 1) {
-        const url = `${CONFIG.TMDB_BASE_URL}/${mediaType}/top_rated?api_key=${CONFIG.TMDB_API_KEY}&page=${page}`;
-        const response = await fetch(url);
-        return response.json();
+        return this.getManualContent(mediaType);
     },
 
-    // Search movies/TV
+    // Helper: Get manual content and hydrate with TMDB data
+    async getManualContent(mediaType) {
+        const dbData = DB.getAllContent();
+        const items = mediaType === 'movie' ? dbData.movies : dbData.tv;
+
+        // Fetch details for each item from TMDB
+        const promises = items.map(item => this.getDetails(item.tmdbId, mediaType));
+        const results = await Promise.all(promises);
+
+        return {
+            page: 1,
+            results: results.filter(r => r && !r.status_message), // Filter errors
+            total_pages: 1,
+            total_results: results.length
+        };
+    },
+
+    // Search TMDB (Used for Admin & Site)
     async search(query, mediaType = 'movie', page = 1) {
         const url = `${CONFIG.TMDB_BASE_URL}/search/${mediaType}?api_key=${CONFIG.TMDB_API_KEY}&query=${encodeURIComponent(query)}&page=${page}`;
         const response = await fetch(url);
@@ -49,13 +60,6 @@ const API = {
         return response.json();
     },
 
-    // Discover by genre
-    async discoverByGenre(genreId, mediaType = 'movie', page = 1) {
-        const url = `${CONFIG.TMDB_BASE_URL}/discover/${mediaType}?api_key=${CONFIG.TMDB_API_KEY}&with_genres=${genreId}&page=${page}`;
-        const response = await fetch(url);
-        return response.json();
-    },
-
     // Get image URL
     getImageUrl(path, size = 'w500') {
         if (!path) return 'https://via.placeholder.com/500x750?text=No+Image';
@@ -68,13 +72,21 @@ const API = {
         return `${CONFIG.TMDB_IMAGE_BASE}/${size}${path}`;
     },
 
-    // Get VidSrc embed URL for movies
+    // Get Manual URL for movies
     getMovieEmbedUrl(tmdbId) {
-        return `${CONFIG.VIDSRC_BASE_URL}/movie/${tmdbId}`;
+        const movie = DB.getMovie(tmdbId);
+        return movie ? movie.url : '';
     },
 
-    // Get VidSrc embed URL for TV shows
+    // Get Manual URL for TV shows
     getTVEmbedUrl(tmdbId, season = 1, episode = 1) {
-        return `${CONFIG.VIDSRC_BASE_URL}/tv/${tmdbId}/${season}/${episode}`;
+        const show = DB.getTV(tmdbId);
+        if (!show || !show.seasons) return '';
+
+        const s = show.seasons.find(s => s.season_number == season);
+        if (!s || !s.episodes) return '';
+
+        const e = s.episodes.find(e => e.episode_number == episode);
+        return e ? e.url : '';
     }
 };

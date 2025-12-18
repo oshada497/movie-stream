@@ -145,6 +145,7 @@
     </footer>
 
     <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
     <script src="js/api.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -189,8 +190,28 @@
 
         function loadPlayer(id) {
             const container = document.getElementById('playerContainer');
-            const embedUrl = API.getMovieEmbedUrl(id);
-            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+            const url = API.getMovieEmbedUrl(id);
+
+            if (!url) {
+                container.innerHTML = '<div class="player-placeholder"><p>No video source available.</p></div>';
+                return;
+            }
+
+            // Check if it's a direct file or HLS
+            const isDirectFile = url.match(/\.(mp4|webm|ogg|mkv|mov|avi)$/i);
+            const isHLS = url.includes('.m3u8');
+
+            if (isDirectFile || isHLS) {
+                container.innerHTML = `
+                    <video id="videoPlayer" controls autoplay style="width: 100%; height: 100%; background: #000;">
+                        <source src="${url}" type="${isHLS ? 'application/x-mpegURL' : 'video/mp4'}">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            } else {
+                // Assume Embed/Iframe
+                container.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" style="width: 100%; height: 100%; border: none;"></iframe>`;
+            }
         }
 
         function displayCards(containerId, items, mediaType) {

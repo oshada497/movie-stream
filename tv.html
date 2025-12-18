@@ -151,6 +151,7 @@
     </footer>
 
     <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
     <script src="js/api.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -251,10 +252,28 @@
             window.history.pushState({}, '', newUrl);
         }
 
-        function loadPlayer(id, season, episode) {
+        function loadPlayer(tvId, season, episode) {
             const container = document.getElementById('playerContainer');
-            const embedUrl = API.getTVEmbedUrl(id, season, episode);
-            container.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+            const url = API.getTVEmbedUrl(tvId, season, episode);
+
+            if (!url) {
+                container.innerHTML = '<div class="player-placeholder"><p>No video source for this episode.</p></div>';
+                return;
+            }
+
+            const isDirectFile = url.match(/\.(mp4|webm|ogg|mkv|mov|avi)$/i);
+            const isHLS = url.includes('.m3u8');
+
+            if (isDirectFile || isHLS) {
+                container.innerHTML = `
+                    <video id="videoPlayer" controls autoplay style="width: 100%; height: 100%; background: #000;">
+                        <source src="${url}" type="${isHLS ? 'application/x-mpegURL' : 'video/mp4'}">
+                        Your browser does not support the video tag.
+                    </video>
+                `;
+            } else {
+                container.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" style="width: 100%; height: 100%; border: none;"></iframe>`;
+            }
             document.getElementById('currentEpisode').textContent = `S${season} E${episode}`;
         }
 
