@@ -14,6 +14,79 @@ async function handleImport(input) {
     }
 }
 
+// View Handling
+function switchView(view) {
+    document.getElementById('searchView').style.display = view === 'search' ? 'block' : 'none';
+    document.getElementById('libraryView').style.display = view === 'library' ? 'block' : 'none';
+
+    // Toggle buttons
+    document.getElementById('btnSearch').classList.toggle('btn-primary', view === 'search');
+    document.getElementById('btnSearch').classList.toggle('btn-secondary', view !== 'search');
+    document.getElementById('btnLibrary').classList.toggle('btn-primary', view === 'library');
+    document.getElementById('btnLibrary').classList.toggle('btn-secondary', view !== 'library');
+
+    if (view === 'library') {
+        renderLibrary();
+    }
+}
+
+// Render Library
+async function renderLibrary() {
+    const list = document.getElementById('libraryList');
+    list.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; // Reuse spinner
+
+    const data = DB.getAllContent();
+    const allItems = [...data.movies.map(m => ({ ...m, media_type: 'movie' })),
+    ...data.tv.map(t => ({ ...t, media_type: 'tv' }))];
+
+    if (allItems.length === 0) {
+        list.innerHTML = '<p style="color: #ccc; grid-column: 1/-1; text-align: center;">No content added yet.</p>';
+        return;
+    }
+
+    // Hydrate with TMDB data
+    const promises = allItems.map(item => API.getDetails(item.tmdbId, item.media_type)
+        .then(details => ({ ...item, ...details }))
+        .catch(() => ({ ...item, title: 'Unknown', poster_path: null })) // Fallback
+    );
+
+    const hydratedItems = await Promise.all(promises);
+
+    list.innerHTML = hydratedItems.map(item => `
+        <div class="search-result-card" style="cursor: default;">
+            <img src="${API.getImageUrl(item.poster_path)}" alt="${item.title || item.name}">
+            <div class="search-result-info">
+                <h4>${item.title || item.name}</h4>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <button onclick="editContent(${item.id}, '${item.media_type}')" class="btn btn-primary" style="flex: 1; padding: 0.3rem;">Edit</button>
+                    <button onclick="deleteContent(${item.id}, '${item.media_type}')" class="btn btn-red" style="flex: 1; padding: 0.3rem;">Delete</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Actions
+async function editContent(id, type) {
+    try {
+        const details = await API.getDetails(id, type);
+        openEditor(details, type);
+    } catch (e) {
+        alert('Error loading details for edit');
+    }
+}
+
+function deleteContent(id, type) {
+    if (confirm('Are you sure you want to delete this content?')) {
+        if (type === 'movie') {
+            DB.removeMovie(id);
+        } else {
+            DB.removeTV(id);
+        }
+        renderLibrary(); // Refresh
+    }
+}
+
 // Search TMDB
 async function searchTMDB() {
     const query = document.getElementById('tmdbSearch').value;

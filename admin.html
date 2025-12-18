@@ -138,23 +138,35 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1>Manage Content</h1>
-        </div>
-
-        <div class="search-box">
-            <div class="form-group">
-                <label>Search TMDB for Movie/TV</label>
-                <div style="display: flex; gap: 1rem;">
-                    <select id="mediaType" style="width: 150px;">
-                        <option value="movie">Movie</option>
-                        <option value="tv">TV Show</option>
-                    </select>
-                    <input type="text" id="tmdbSearch" placeholder="Type to search...">
-                    <button onclick="searchTMDB()" class="btn btn-primary">Search</button>
-                </div>
+            <div class="view-toggles">
+                <button onclick="switchView('search')" class="btn btn-primary" id="btnSearch">Add New</button>
+                <button onclick="switchView('library')" class="btn btn-secondary" id="btnLibrary">My Library</button>
             </div>
         </div>
 
-        <div id="searchResults" class="search-results"></div>
+        <!-- Search Section -->
+        <div id="searchView">
+            <div class="search-box">
+                <div class="form-group">
+                    <label>Search TMDB for Movie/TV</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <select id="mediaType" style="width: 150px;">
+                            <option value="movie">Movie</option>
+                            <option value="tv">TV Show</option>
+                        </select>
+                        <input type="text" id="tmdbSearch" placeholder="Type to search...">
+                        <button onclick="searchTMDB()" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- Library Section -->
+        <div id="libraryView" style="display: none;">
+            <div id="libraryList" class="search-results"></div>
+        </div>
     </div>
 
     <!-- Editor Modal -->

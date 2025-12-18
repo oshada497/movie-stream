@@ -66,6 +66,20 @@ const DB = {
         this.saveData(data);
     },
 
+    // Remove movie
+    removeMovie(tmdbId) {
+        const data = this.getData();
+        data.movies = data.movies.filter(m => m.tmdbId.toString() !== tmdbId.toString());
+        this.saveData(data);
+    },
+
+    // Remove TV show
+    removeTV(tmdbId) {
+        const data = this.getData();
+        data.tv = data.tv.filter(t => t.tmdbId.toString() !== tmdbId.toString());
+        this.saveData(data);
+    },
+
     // Get all content for list display
     getAllContent() {
         const data = this.getData();

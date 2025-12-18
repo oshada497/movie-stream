@@ -4,9 +4,10 @@ A modern movie and TV show streaming website using VidSrc API and TMDB for metad
 
 ## Features
 
-- 🎬 Browse trending movies and TV shows
-- 🔍 Search functionality
-- 📺 Watch movies and TV shows with episode selector
+- 🎬 Browse manually curated movies and TV shows
+- 🔍 Search functionality (TMDB Integration)
+- 📺 Watch manual content (Direct File & HLS Support)
+- ⚙️ Admin Dashboard to manage content
 - 🎨 Dark theme with glassmorphism effects
 - 📱 Fully responsive design
 
@@ -14,7 +15,8 @@ A modern movie and TV show streaming website using VidSrc API and TMDB for metad
 
 - HTML5, CSS3, JavaScript (Vanilla)
 - TMDB API for movie/TV metadata
-- VidSrc.cc for video streaming
+- LocalStorage Database for content management
+- Custom HTML5 Video Player
 
 ## Deployment
 
