@@ -218,19 +218,60 @@
                         const hls = new Hls();
                         hls.loadSource(url);
                         hls.attachMedia(video);
+
+                        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                            const availableQualities = hls.levels.map((l) => l.height);
+                            availableQualities.unshift(0); // 0 is for 'Auto'
+
+                            const player = new Plyr(video, {
+                                controls: [
+                                    'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                                ],
+                                quality: {
+                                    default: 0,
+                                    options: availableQualities,
+                                    forced: true,
+                                    onChange: (e) => updateQuality(e),
+                                },
+                                settings: ['captions', 'quality', 'speed', 'loop'],
+                            });
+
+                            player.on('ready', () => {
+                                // Default to auto
+                                window.hls = hls;
+                            });
+
+                            function updateQuality(newQuality) {
+                                if (newQuality === 0) {
+                                    window.hls.currentLevel = -1; // Auto
+                                } else {
+                                    window.hls.levels.forEach((level, levelIndex) => {
+                                        if (level.height === newQuality) {
+                                            window.hls.currentLevel = levelIndex;
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                         video.src = url;
+                        // Native HLS support (Safari)
+                        new Plyr(video, {
+                            controls: [
+                                'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                            ],
+                            settings: ['captions', 'quality', 'speed', 'loop'],
+                        });
                     }
+                } else {
+                    // Standard MP4
+                    new Plyr(video, {
+                        controls: [
+                            'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+                        ],
+                        settings: ['captions', 'quality', 'speed', 'loop'],
+                    });
                 }
-
-                // Initialize Plyr
-                new Plyr(video, {
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'
-                    ],
-                    settings: ['captions', 'quality', 'speed', 'loop'],
-                    invertTime: false
-                });
 
             } else {
                 // Assume Embed/Iframe
